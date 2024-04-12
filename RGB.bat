@@ -1,6 +1,6 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-py "load.py" %*
+python "load.py" %*
 endlocal
 pause

@@ -11,6 +11,7 @@ import os
 import sys
 import threading
 baud_rate = 115200
+#baud_rate = 19200
 capture_width = 1920
 capture_height = 1080
 downsample_factor = 8
@@ -31,7 +32,7 @@ def find_arduino_port():
     arduino_ports = [
         p.device
         for p in list_ports.comports()
-        if "CH340" in p.description or "ARDUINO" in p.description]
+        if ("CH340" in p.description) or ("Arduino" in p.description) or ("ARDUINO" in p.description)]
     if not arduino_ports:
         raise Exception("Arduino not found. Make sure it's connected.")
     return arduino_ports[0]
@@ -111,7 +112,7 @@ class RGBSync(tk.Tk):
         else:
             print("\033[92mGAMMA NA\033[0m | ", end="")
         if mode==1:
-            if avg_r>120 and avg_g>120 and avg_b>120:
+            if avg_r+avg_g+avg_b> 500:
                 avr_r=255
                 avr_g=255
                 avr_b=255
@@ -133,7 +134,7 @@ class RGBSync(tk.Tk):
             # Send the adjusted color values to Arduino
             color_data = ','.join(map(str, average_color)) + '\n'
             ser.write(color_data.encode())
-            time.sleep(0)  # Adjust the delay as needed
+            time.sleep(0.003)  # Adjust the delay as needed
     def hexpicker(self):
         color = askcolor()[1]  # Get the selected color in the format "#RRGGBB"
         rgb=ImageColor.getrgb(color)
@@ -208,7 +209,7 @@ class RGBSync(tk.Tk):
 
     def stop_thread(self):
         self.sw=0
-        time.sleep(0.5)
+        time.sleep(0.1)
         self.sw=1
     def select_option(self):
             choice = self.choice_var.get()
